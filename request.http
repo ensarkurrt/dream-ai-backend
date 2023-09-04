@@ -1,0 +1,17 @@
+### Create a dream
+POST http://localhost:8008/dream
+Content-Type: application/json
+
+{
+  "content": "My Dream Content {{$random.integer(1, 100)}}"
+}
+
+
+### Get a dream
+GET http://localhost:8008/dream/3
+Content-Type: application/json
+
+
+### Get all dreams
+GET http://localhost:8008/dreams
+Content-Type: application/json
