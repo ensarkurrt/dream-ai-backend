@@ -18,14 +18,14 @@ func GetAllDreams(c *gin.Context) {
 func GetDream(c *gin.Context) {
 
 	id := c.Param("id")
-	var quest models.Dream
+	var dream models.Dream
 
-	if err := models.DB.Where("id = ?", id).First(&quest).Error; err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, "Dream not found")
+	if err := models.DB.Where("id = ?", id).First(&dream).Error; err != nil {
+		utils.RespondWithError(c, http.StatusNotFound, "Dream not found!")
 		return
 	}
 
-	utils.RespondWithJSON(c, http.StatusOK, quest)
+	utils.RespondWithJSON(c, http.StatusOK, dream)
 
 }
 
@@ -43,7 +43,7 @@ func CreateDream(c *gin.Context) {
 	err := validate.Struct(input)
 
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, "Validation Error")
+		utils.RespondWithError(c, http.StatusBadRequest, "Validation Error. Please check your inputs")
 		return
 	}
 
@@ -54,12 +54,12 @@ func CreateDream(c *gin.Context) {
 	result := models.DB.Create(dream)
 
 	if result.Error != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, result.Error.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while creating dream")
 		return
 	}
 
 	if result.RowsAffected == 0 {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Error creating dream2")
+		utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while creating dream")
 		return
 	}
 
