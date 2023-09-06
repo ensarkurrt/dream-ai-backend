@@ -3,12 +3,12 @@ POST http://localhost:8008/dream
 Content-Type: application/json
 
 {
-  "content": "My Dream Content {{$random.integer(1, 100)}}"
+  "content": "Bir rüya gördüm. Rüyamda iki ekmek vardı. Biri küflüydü."
 }
 
 
 ### Get a dream
-GET http://localhost:8008/dream/3
+GET http://localhost:8008/dream/14
 Content-Type: application/json
 
 
