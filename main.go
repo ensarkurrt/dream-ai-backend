@@ -21,4 +21,6 @@ func main() {
 	if err != nil {
 		log.Fatal("error with ListenAndServe on main", err)
 	}
+
+	/*StartQueue()*/
 }

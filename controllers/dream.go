@@ -55,39 +55,12 @@ func CreateDream(c *gin.Context) {
 		return
 	}
 
-	/*explanationChan := make(chan string)
-	titleChan := make(chan string)
-
-	go func() {
-		_exp, err := utils.GenerateExplanation(input.Content)
-		if err != nil {
-			utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while responding to your request")
-			explanationChan <- ""
-			return
-		}
-		explanationChan <- *_exp
-	}()
-
-	go func() {
-		_title, err := utils.GenerateTitle(input.Content)
-		if err != nil {
-			utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while responding to your request")
-			titleChan <- ""
-			return
-		}
-		titleChan <- *_title
-	}()
-
-	explanation := <-explanationChan
-	title := <-titleChan*/
-
 	dream := &models.Dream{
 		Content: input.Content,
-		/*Explanation: explanation,
-		Title:       title,*/
 	}
 
 	result := models.DB.Create(dream)
+	go utils.SendDreamToQueue(dream)
 
 	if input.GenerateImage {
 		go func() {
