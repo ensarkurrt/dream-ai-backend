@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,4 +27,16 @@ func RespondWithJSON(c *gin.Context, code int, message string, payload interface
 	}
 
 	c.JSON(code, responseMap)
+}
+
+func formatJSON(data []byte) string {
+	var out bytes.Buffer
+	err := json.Indent(&out, data, "", " ")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	d := out.Bytes()
+	return string(d)
 }

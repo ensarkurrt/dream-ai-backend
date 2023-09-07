@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/yazilimcigenclik/dream-ai-backend/models"
 	"github.com/yazilimcigenclik/dream-ai-backend/utils"
-	"net/http"
 )
 
 func GetAllDreams(c *gin.Context) {
@@ -54,7 +55,7 @@ func CreateDream(c *gin.Context) {
 		return
 	}
 
-	explanationChan := make(chan string)
+	/*explanationChan := make(chan string)
 	titleChan := make(chan string)
 
 	go func() {
@@ -64,7 +65,7 @@ func CreateDream(c *gin.Context) {
 			explanationChan <- ""
 			return
 		}
-		explanationChan <- _exp
+		explanationChan <- *_exp
 	}()
 
 	go func() {
@@ -74,19 +75,29 @@ func CreateDream(c *gin.Context) {
 			titleChan <- ""
 			return
 		}
-		titleChan <- _title
+		titleChan <- *_title
 	}()
 
 	explanation := <-explanationChan
-	title := <-titleChan
+	title := <-titleChan*/
 
 	dream := &models.Dream{
-		Content:     input.Content,
-		Explanation: explanation,
-		Title:       title,
+		Content: input.Content,
+		/*Explanation: explanation,
+		Title:       title,*/
 	}
 
 	result := models.DB.Create(dream)
+
+	if input.GenerateImage {
+		go func() {
+			_, err := utils.GenerateImageWithPrompt(*dream)
+			if err != nil {
+				utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while responding to your request for image generation")
+				return
+			}
+		}()
+	}
 
 	if result.Error != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "An error occurred while creating dream")
@@ -100,25 +111,3 @@ func CreateDream(c *gin.Context) {
 
 	utils.RespondWithJSON(c, http.StatusCreated, "Dream created successfully", nil)
 }
-
-/*
-func ImaginateDream(c *gin.Context) {
-
-	id := c.Param("id")
-	var dream models.Dream
-
-	if err := models.DB.Where("id = ?", id).First(&dream).Error; err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, "Dream not found!")
-		return
-	}
-
-	// TODO :: image processing here and update imageUrl
-
-
-	imageUrl := "https://i.pinimg.com/originals/0f/0d/9a/0f0d9a1b6b6b0b0b0b0b0b0b0b0b0b0b.jpg"
-	models.DB.Model(&dream).Update("image_url", imageUrl)
-
-
-
-	utils.RespondWithJSON(c, http.StatusOK, "Dream imaginated successfully", dream)
-}*/

@@ -33,7 +33,7 @@ func ConnectDatabase() {
 
 	/*defer sqlDB.Close()*/
 
-	err = database.AutoMigrate(&Dream{})
+	err = database.AutoMigrate(&Dream{}, &DreamImageQueue{})
 	if err != nil {
 		log.Fatal("Error migrating database: ", err)
 	}

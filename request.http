@@ -3,7 +3,8 @@ POST http://localhost:8008/dream
 Content-Type: application/json
 
 {
-  "content": "Bir rüya gördüm. Rüyamda iki ekmek vardı. Biri küflüydü."
+  "content": "Bir rüya gördüm. Rüyamda iki ekmek vardı. Biri küflüydü.",
+  "generate_image": true
 }
 
 
@@ -15,3 +16,49 @@ Content-Type: application/json
 ### Get all dreams
 GET http://localhost:8008/dreams
 Content-Type: application/json
+
+
+### OpenJourney RunPod
+POST https://api.runpod.ai/v2/sd-openjourney/runsync
+Content-Type: application/json
+Accept: application/json
+Authorization: 39MATVWRWVJ96Q2LRQUVG3040FJT5SWVETJKQNIY
+
+{
+  "input": {
+    "prompt": "mdjrny-v4 style there were two loaves of bread. One of them was moldy., digital painting, concept art, smooth, sharp focus, illustration, 8k",
+    "width": 256,
+    "height": 256,
+    "guidance_scale": 7,
+    "num_inference_steps": 50,
+    "num_outputs": 1,
+    "prompt_strength": 0.8,
+    "scheduler": "K-LMS"
+  }
+}
+
+### Replicate OpenJourney
+POST https://api.replicate.com/v1/predictions
+Content-Type: application/json
+Accept: application/json
+Authorization: Token r8_WVY9C1g6jhUYDBtnzCo47n7S16oYx2U2qFja6
+
+{
+    "version": "ad59ca21177f9e217b9075e7300cf6e14f7e5b4505b87b9689dbd866e9768969",
+    "input": {
+        "prompt": "mdjrny-v4 style iki ekmek vardı. bir tanesi küflüydü. digital painting, concept art, smooth, sharp focus, illustration, 8k",
+        "width": 512,
+        "height": 512,
+        "guidance_scale": 7,
+        "num_inference_steps": 50,
+        "num_outputs": 1,
+        "prompt_strength": 0.8,
+        "scheduler": "KLMS"
+    }
+}
+
+### Replicate OpenJourney Get Status
+GET https://api.replicate.com/v1/predictions/2iyc6tbb4rrrhflvbfb54mabi4
+Content-Type: application/json
+Accept: application/json
+Authorization: Token r8_WVY9C1g6jhUYDBtnzCo47n7S16oYx2U2qFja6
