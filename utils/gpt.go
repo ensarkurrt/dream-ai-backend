@@ -3,8 +3,9 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/sashabaranov/go-openai"
 	"os"
+
+	"github.com/sashabaranov/go-openai"
 )
 
 func GenerateExplanation(prompt string) (*string, error) {
@@ -64,30 +65,24 @@ func GenerateTitle(prompt string) (*string, error) {
 	return &resp.Choices[0].Text, nil
 }
 
-/*
-func GenerateImage(prompt string) (*string, error) {
+func GenerateImagePrompt(prompt string) (*string, error) {
 	openaiToken := os.Getenv("OPEN_AI_TOKEN")
 
 	client := openai.NewClient(openaiToken)
 	ctx := context.Background()
 
-	imagePrompt := "mdjrny-v4 style there were two loaves of bread. One of them was moldy., digital painting, concept art, smooth, sharp focus, illustration, 8k"
-
-	fmt.Println("Imaginate prompt: " + imagePrompt)
-
-	reqUrl := openai.ImageRequest{
-		Prompt:         imagePrompt,
-		Size:           openai.CreateImageSize512x512,
-		ResponseFormat: openai.CreateImageResponseFormatURL,
-		N:              1,
+	req := openai.CompletionRequest{
+		Model:     openai.GPT3TextDavinci003,
+		MaxTokens: 50,
+		Prompt:    " \" " + prompt + " \" metninin ingilizcesi:",
 	}
 
-	respUrl, err := client.CreateImage(ctx, reqUrl)
+	resp, err := client.CreateCompletion(ctx, req)
 
 	if err != nil {
-		fmt.Printf("Image creation error: %v\n", err)
+		fmt.Printf("Generate Image Prompt Completion error: %v\n", err)
 		return nil, err
 	}
 
-	return &respUrl.Data[0].URL, nil
-}*/
+	return &resp.Choices[0].Text, nil
+}

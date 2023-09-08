@@ -16,7 +16,7 @@ func GenerateImageWithPrompt(dream models.Dream) (*models.DreamImageQueue, error
 	postData := []byte(`{
     "version": "ad59ca21177f9e217b9075e7300cf6e14f7e5b4505b87b9689dbd866e9768969",
     "input": {
-        "prompt": "mdjrny-v4 style. ` + dream.Content + `., digital painting, concept art, smooth, sharp focus, illustration, 8k",
+        "prompt": "mdjrny-v4 style. ` + dream.Content + `. digital painting, concept art, smooth, sharp focus, illustration, 8k",
         "width": 512,
         "height": 512,
         "guidance_scale": 7,

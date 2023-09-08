@@ -3,7 +3,7 @@ POST http://localhost:8008/dream
 Content-Type: application/json
 
 {
-  "content": "Bir rüya gördüm. Rüyamda iki ekmek vardı. Biri küflüydü.",
+  "content": "Rüyamda iki ekmek vardı. Biri küflüydü.",
   "generate_image": true
 }
 
