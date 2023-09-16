@@ -18,8 +18,8 @@ type DreamRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (u DreamRepositoryImpl) FindAllDream() ([]*dao.Dream, error) {
-	var dreams []*dao.Dream
+func (u *DreamRepositoryImpl) FindAllDream() ([]dao.Dream, error) {
+	var dreams []dao.Dream
 
 	err := u.db.Find(&dreams).Error
 
@@ -31,28 +31,28 @@ func (u DreamRepositoryImpl) FindAllDream() ([]*dao.Dream, error) {
 	return dreams, nil
 }
 
-func (u DreamRepositoryImpl) FindDreamById(id int) (*dao.Dream, error) {
+func (u *DreamRepositoryImpl) FindDreamById(id int) (dao.Dream, error) {
 	var dream dao.Dream
 
 	err := u.db.Where("id = ?", id).First(&dream).Error
 
 	if err != nil {
-		log.Error("Got and error when find user by id. Error: ", err)
-		return nil, err
+		log.Error("Got an error when find user by id. Error: ", err)
+		return dao.Dream{}, err
 	}
 
-	return &dream, nil
+	return dream, nil
 }
 
-func (u DreamRepositoryImpl) CreateDream(dream *dao.Dream) (*dao.Dream, error) {
+func (u *DreamRepositoryImpl) CreateDream(dream *dao.Dream) (dao.Dream, error) {
 	err := u.db.Create(dream).Error
 
 	if err != nil {
 		fmt.Println("Error occurred while creating dream on model", err)
-		return nil, err
+		return dao.Dream{}, err
 	}
 
-	return dream, nil
+	return *dream, nil
 }
 
 func DreamRepositoryInit(db *gorm.DB) *DreamRepositoryImpl {

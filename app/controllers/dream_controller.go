@@ -15,16 +15,16 @@ type DreamControllerImpl struct {
 	svc services.DreamService
 }
 
-func (u DreamControllerImpl) GetAllDreamData(c *gin.Context) {
-	u.svc.GetAllDream(c)
+func (d *DreamControllerImpl) GetAllDreams(c *gin.Context) {
+	d.svc.GetAllDream(c)
 }
 
-func (u DreamControllerImpl) AddDreamData(c *gin.Context) {
-	u.svc.CreateDream(c)
+func (d *DreamControllerImpl) CreateDream(c *gin.Context) {
+	d.svc.CreateDream(c)
 }
 
-func (u DreamControllerImpl) GetDreamById(c *gin.Context) {
-	u.svc.GetDreamById(c)
+func (d *DreamControllerImpl) GetDreamById(c *gin.Context) {
+	d.svc.GetDreamById(c)
 }
 
 func DreamControllerInit(dreamService services.DreamService) *DreamControllerImpl {
