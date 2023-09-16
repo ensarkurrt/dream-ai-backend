@@ -2,40 +2,26 @@ package repository
 
 import (
 	"fmt"
-	"github.com/yazilimcigenclik/dream-ai-backend/models"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/yazilimcigenclik/dream-ai-backend/app/domain/dao"
 	"gorm.io/gorm"
 )
 
-type DreamRepoInterface interface {
-	DreamById(id int) (*models.Dream, error)
-	Dreams() ([]*models.Dream, error)
-	CreateDream(u *models.Dream) error
+type DreamRepository interface {
+	FindAllDream() ([]dao.Dream, error)
+	FindDreamById(id int) (dao.Dream, error)
+	CreateDream(dream *dao.Dream) (dao.Dream, error)
 }
 
-type DreamRepository struct {
-	DB *gorm.DB
+type DreamRepositoryImpl struct {
+	db *gorm.DB
 }
 
-func NewDreamRepository(db *gorm.DB) *DreamRepository {
-	return &DreamRepository{DB: db}
-}
+func (u DreamRepositoryImpl) FindAllDream() ([]*dao.Dream, error) {
+	var dreams []*dao.Dream
 
-func (r *DreamRepository) DreamById(id int) (*models.Dream, error) {
-	var dream models.Dream
-
-	err := r.DB.Where("id = ?", id).First(&dream).Error
-
-	if err != nil {
-		fmt.Println("Error occurred while fetching dream on model", err)
-		return nil, err
-	}
-	return &dream, nil
-}
-
-func (r *DreamRepository) Dreams() ([]*models.Dream, error) {
-	var dreams []*models.Dream
-
-	err := r.DB.Find(&dreams).Error
+	err := u.db.Find(&dreams).Error
 
 	if err != nil {
 		fmt.Println("Error occurred while fetching dreams on model", err)
@@ -45,13 +31,40 @@ func (r *DreamRepository) Dreams() ([]*models.Dream, error) {
 	return dreams, nil
 }
 
-func (r *DreamRepository) CreateDream(dream *models.Dream) error {
-	err := r.DB.Create(&dream).Error
+func (u DreamRepositoryImpl) FindDreamById(id int) (*dao.Dream, error) {
+	var dream dao.Dream
+
+	err := u.db.Where("id = ?", id).First(&dream).Error
+
+	if err != nil {
+		log.Error("Got and error when find user by id. Error: ", err)
+		return nil, err
+	}
+
+	return &dream, nil
+}
+
+func (u DreamRepositoryImpl) CreateDream(dream *dao.Dream) (*dao.Dream, error) {
+	err := u.db.Create(dream).Error
 
 	if err != nil {
 		fmt.Println("Error occurred while creating dream on model", err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return dream, nil
+}
+
+func DreamRepositoryInit(db *gorm.DB) *DreamRepositoryImpl {
+	log.Info("Dream repository initialized")
+	err := db.AutoMigrate(&dao.Dream{})
+
+	if err != nil {
+		log.Error("Got an error when migrate user. Error: ", err)
+		return nil
+	}
+
+	return &DreamRepositoryImpl{
+		db: db,
+	}
 }

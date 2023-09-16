@@ -1,9 +1,9 @@
-package utils
+package utils /*package utils
 
 import (
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/yazilimcigenclik/dream-ai-backend/models"
+	"github.com/yazilimcigenclik/dream-ai-backend/app/models"
 )
 
 func SendDreamToQueue(dream *models.Dream) {
@@ -55,3 +55,4 @@ func SendDreamToQueue(dream *models.Dream) {
 
 	fmt.Println("message published successfully")
 }
+*/

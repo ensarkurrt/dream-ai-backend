@@ -1,15 +1,17 @@
 package utils
 
+/*package utils
+
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/yazilimcigenclik/dream-ai-backend/models"
+	models2 "github.com/yazilimcigenclik/dream-ai-backend/app/models"
 	"net/http"
 	"os"
 )
 
-func GenerateImageWithPrompt(dream models.Dream) (*models.DreamImageQueue, error) {
+func GenerateImageWithPrompt(dream models2.Dream) (*models2.DreamImageQueue, error) {
 
 	apiUrl := "https://api.replicate.com/v1/predictions"
 	apiToken := os.Getenv("REPLICATE_API_TOKEN")
@@ -57,7 +59,7 @@ func GenerateImageWithPrompt(dream models.Dream) (*models.DreamImageQueue, error
 		return nil, fmt.Errorf(*imageResponse.Error)
 	}
 
-	dreamQueue := models.DreamImageQueue{
+	dreamQueue := models2.DreamImageQueue{
 		DreamId: dream.ID,
 		QueueId: imageResponse.Id,
 		Version: imageResponse.Version,
@@ -65,12 +67,12 @@ func GenerateImageWithPrompt(dream models.Dream) (*models.DreamImageQueue, error
 		Status:  imageResponse.Status,
 	}
 
-	models.DB.Create(&dreamQueue)
+	models2.DB.Create(&dreamQueue)
 
 	return &dreamQueue, nil
 }
 
-func UpdateStatusFromAPI(imageRequest models.DreamImageQueue) (*models.DreamImageQueue, error) {
+func UpdateStatusFromAPI(imageRequest models2.DreamImageQueue) (*models2.DreamImageQueue, error) {
 
 	apiToken := os.Getenv("REPLICATE_API_TOKEN")
 	// create new http request
@@ -104,17 +106,17 @@ func UpdateStatusFromAPI(imageRequest models.DreamImageQueue) (*models.DreamImag
 	}
 
 	if imageResponse.Status == "succeeded" {
-		models.DB.Model(&imageRequest).Updates(models.DreamImageQueue{
+		models2.DB.Model(&imageRequest).Updates(models2.DreamImageQueue{
 			Output: (*imageResponse.Outputs)[0],
 			Status: imageResponse.Status,
 		})
 
-		models.DB.Model(&models.Dream{}).Where("id = ?", imageRequest.DreamId).Updates(models.Dream{
+		models2.DB.Model(&models2.Dream{}).Where("id = ?", imageRequest.DreamId).Updates(models2.Dream{
 			ImageUrl: &(*imageResponse.Outputs)[0],
 		})
 
 	} else {
-		models.DB.Model(&imageRequest).Updates(models.DreamImageQueue{
+		models2.DB.Model(&imageRequest).Updates(models2.DreamImageQueue{
 			Status: imageResponse.Status,
 		})
 	}
@@ -135,3 +137,4 @@ type Urls struct {
 	Cancel string `json:"cancel"`
 	Get    string `json:"get"`
 }
+*/

@@ -1,12 +1,12 @@
-package main
+package app /*package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/yazilimcigenclik/dream-ai-backend/models"
-	"github.com/yazilimcigenclik/dream-ai-backend/utils"
+	models2 "github.com/yazilimcigenclik/dream-ai-backend/app/models"
+	utils2 "github.com/yazilimcigenclik/dream-ai-backend/app/utils"
 	"log"
 )
 
@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	models.ConnectDatabase()
+	models2.ConnectDatabase()
 
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
@@ -86,13 +86,13 @@ func main() {
 
 func createDream(dreamId *uint) {
 
-	var dream models.Dream
+	var dream models2.Dream
 
-	var dreamQueue models.DreamImageQueue
+	var dreamQueue models2.DreamImageQueue
 
 	fmt.Println("Dream ID: ", *dreamId)
 
-	if err := models.DB.Where("id = ?", *dreamId).First(&dream).Error; err != nil {
+	if err := models2.DB.Where("id = ?", *dreamId).First(&dream).Error; err != nil {
 		fmt.Println("Dream not found!")
 		return
 	}
@@ -102,7 +102,7 @@ func createDream(dreamId *uint) {
 	imageStatusChan := make(chan string)
 
 	go func() {
-		_exp, err := utils.GenerateExplanation(dream.Content)
+		_exp, err := utils2.GenerateExplanation(dream.Content)
 
 		if err != nil {
 			fmt.Println("An error occurred while responding to your request")
@@ -116,7 +116,7 @@ func createDream(dreamId *uint) {
 	}()
 
 	go func() {
-		_title, err := utils.GenerateTitle(dream.Content)
+		_title, err := utils2.GenerateTitle(dream.Content)
 		if err != nil {
 			fmt.Println("An error occurred while responding to your request")
 			titleChan <- ""
@@ -130,12 +130,12 @@ func createDream(dreamId *uint) {
 	explanation := <-explanationChan
 	title := <-titleChan
 
-	models.DB.Model(&dream).Updates(models.Dream{
+	models2.DB.Model(&dream).Updates(models2.Dream{
 		Explanation: explanation,
 		Title:       title,
 	})
 
-	if err := models.DB.Where("dream_id = ?", dreamId).First(&dreamQueue).Error; err == nil && (dreamQueue.Status != "succeeded" && dreamQueue.Status != "failed") {
+	if err := models2.DB.Where("dream_id = ?", dreamId).First(&dreamQueue).Error; err == nil && (dreamQueue.Status != "succeeded" && dreamQueue.Status != "failed") {
 		fmt.Println("Image generation is already in progress")
 		go getImageStatus(dreamQueue, imageStatusChan)
 
@@ -149,9 +149,9 @@ func createDream(dreamId *uint) {
 
 }
 
-func getImageStatus(dreamQueue models.DreamImageQueue, imageStatusChan chan string) {
+func getImageStatus(dreamQueue models2.DreamImageQueue, imageStatusChan chan string) {
 
-	queue, err := utils.UpdateStatusFromAPI(dreamQueue)
+	queue, err := utils2.UpdateStatusFromAPI(dreamQueue)
 	if err != nil {
 		fmt.Println("An error occurred while responding to your request for image")
 		return
@@ -169,3 +169,4 @@ func getImageStatus(dreamQueue models.DreamImageQueue, imageStatusChan chan stri
 type dreamQueue struct {
 	DreamId uint `json:"id"`
 }
+*/

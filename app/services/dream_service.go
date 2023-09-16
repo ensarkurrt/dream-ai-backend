@@ -1,15 +1,16 @@
-package service
+package services
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/constants"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/domain/dao"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/pkg"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/repository"
-	"net/http"
-	"strconv"
 )
 
 type DreamService interface {
