@@ -12,6 +12,7 @@ type DreamRepository interface {
 	FindAllDream() ([]dao.Dream, error)
 	FindDreamById(id int) (dao.Dream, error)
 	CreateDream(dream dao.Dream) (dao.Dream, error)
+	UpdateDream(dream dao.Dream) (dao.Dream, error)
 }
 
 type DreamRepositoryImpl struct {
@@ -55,7 +56,18 @@ func (u *DreamRepositoryImpl) CreateDream(dream dao.Dream) (dao.Dream, error) {
 	return dream, nil
 }
 
-func DreamRepositoryInit(db *gorm.DB) *DreamRepositoryImpl {
+func (u *DreamRepositoryImpl) UpdateDream(dream dao.Dream) (dao.Dream, error) {
+	err := u.db.Save(&dream).Error
+
+	if err != nil {
+		fmt.Println("Error occurred while updating dream on model", err)
+		return dao.Dream{}, err
+	}
+
+	return dream, nil
+}
+
+func NewDreamRepository(db *gorm.DB) *DreamRepositoryImpl {
 	log.Info("Dream repository initialized")
 	err := db.AutoMigrate(&dao.Dream{})
 

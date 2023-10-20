@@ -52,6 +52,7 @@ func (gpt *GPTImpl) GenerateExplanation(prompt string) (string, error) {
 		},
 	)
 
+	log.Println("Prompt: ", prompt)
 	if err != nil {
 		log.Println("Generate Explanation Completion error: %v\n", err)
 		return "", err

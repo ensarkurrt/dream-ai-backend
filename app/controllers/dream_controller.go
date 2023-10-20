@@ -52,7 +52,7 @@ func (d *DreamControllerImpl) GetDreamById(c *gin.Context) {
 	c.JSON(http.StatusOK, pkg.BuildResponse[dto.DreamDTO](constants.Success, dream))
 }
 
-func DreamControllerInit(dreamService services.DreamService) *DreamControllerImpl {
+func NewDreamController(dreamService services.DreamService) *DreamControllerImpl {
 	return &DreamControllerImpl{
 		svc: dreamService,
 	}

@@ -17,9 +17,12 @@ func NewInitialization(
 	db *gorm.DB,
 ) *Initialization {
 	log.Println("Initialization started")
-	dreamRepository := repository.DreamRepositoryInit(db)
-	dreamService := services.DreamServiceInit(dreamRepository)
-	dreamController := controllers.DreamControllerInit(dreamService)
+
+	dreamQueueRepository := repository.NewDreamQueueRepository(db)
+
+	dreamRepository := repository.NewDreamRepository(db)
+	dreamService := services.NewDreamService(dreamRepository, dreamQueueRepository)
+	dreamController := controllers.NewDreamController(dreamService)
 
 	userRepository := repository.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)

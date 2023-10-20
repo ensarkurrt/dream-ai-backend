@@ -8,7 +8,6 @@ import (
 	"github.com/yazilimcigenclik/dream-ai-backend/app/pkg"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/repository"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/utils"
-	"sync"
 )
 
 type DreamService interface {
@@ -19,6 +18,7 @@ type DreamService interface {
 
 type DreamServiceImpl struct {
 	dreamRepository repository.DreamRepository
+	queueRepository repository.DreamQueueRepository
 }
 
 func (u DreamServiceImpl) GetDreamById(id int) dto.DreamDTO {
@@ -56,31 +56,29 @@ func (u DreamServiceImpl) GetAllDream() []dto.DreamDTO {
 func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamDTO {
 
 	dream := dao.Dream{
-		Content:       request.Content,
-		GenerateImage: request.GenerateImage,
+		Content: request.Content,
 	}
-
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	gpt := utils.NewGPT()
-	go func() {
-		defer wg.Done()
-		resp, err := gpt.GenerateTitle(request.Content)
-		if err != nil {
-			log.Error("Happened error when generating Title: Error: ", err)
-			pkg.PanicException(constants.UnknownError)
-		}
-		dream.Title = resp
-	}()
-
-	wg.Wait()
 
 	data, err := u.dreamRepository.CreateDream(dream)
 
 	if err != nil {
-		log.Error("Happened error when get data from database. Error", err)
+		log.Error("Happened error when creating dream. Error", err)
 		pkg.PanicException(constants.DataNotFound)
+	}
+
+	dreamQueue, err := u.queueRepository.Create(dao.DreamQueue{
+		DreamID: data.ID,
+		Dream:   data,
+	})
+
+	err = utils.NewDreamQueueTask(dreamQueue)
+	if err != nil {
+		log.Error("Happened error when creating queue. Error", err)
+		pkg.PanicException(constants.UnknownError)
+	}
+
+	if err != nil {
+		log.Error("Happened error when creating queue. Error", err)
 	}
 
 	var dreamDTO dto.DreamDTO
@@ -89,8 +87,9 @@ func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamD
 	return dreamDTO
 }
 
-func DreamServiceInit(dreamRepository repository.DreamRepository) *DreamServiceImpl {
+func NewDreamService(dreamRepository repository.DreamRepository, queueRepository repository.DreamQueueRepository) *DreamServiceImpl {
 	return &DreamServiceImpl{
 		dreamRepository: dreamRepository,
+		queueRepository: queueRepository,
 	}
 }

@@ -10,19 +10,17 @@ type GetDreamByIDRequest struct {
 }
 
 type CreateDreamRequest struct {
-	Content       string `json:"content" binding:"required"`
-	GenerateImage bool   `json:"generate_image"`
+	Content string `json:"content" binding:"required"`
 }
 
 type DreamDTO struct {
-	ID            uint      `gorm:"primarykey" json:"id"`
-	Title         string    `json:"title" gorm:"not null"`
-	Content       string    `json:"content"`
-	Explanation   string    `json:"explanation"`
-	ImageUrl      *string   `json:"image_url"`
-	GenerateImage bool      `json:"generate_image"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID          uint            `gorm:"primarykey" json:"id"`
+	Title       string          `json:"title"`
+	Content     string          `json:"content" gorm:"not null"`
+	Explanation string          `json:"explanation"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+	Status      dao.DreamStatus `json:"status"`
 }
 
 func (dto *DreamDTO) FromDream(dream dao.Dream) {
@@ -30,8 +28,7 @@ func (dto *DreamDTO) FromDream(dream dao.Dream) {
 	dto.Title = dream.Title
 	dto.Content = dream.Content
 	dto.Explanation = dream.Explanation
-	dto.ImageUrl = &dream.ImageUrl
-	dto.GenerateImage = dream.GenerateImage
 	dto.CreatedAt = dream.CreatedAt
 	dto.UpdatedAt = dream.UpdatedAt
+	dto.Status = dream.Status
 }
