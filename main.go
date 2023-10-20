@@ -23,7 +23,9 @@ func main() {
 
 	log.Println("Starting server on port " + port)
 
-	init := config.Init()
+	db := config.ConnectToDB()
+
+	init := config.NewInitialization(db)
 
 	log.Println("Initializing...")
 

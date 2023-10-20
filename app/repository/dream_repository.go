@@ -11,7 +11,7 @@ import (
 type DreamRepository interface {
 	FindAllDream() ([]dao.Dream, error)
 	FindDreamById(id int) (dao.Dream, error)
-	CreateDream(dream *dao.Dream) (dao.Dream, error)
+	CreateDream(dream dao.Dream) (dao.Dream, error)
 }
 
 type DreamRepositoryImpl struct {
@@ -44,15 +44,15 @@ func (u *DreamRepositoryImpl) FindDreamById(id int) (dao.Dream, error) {
 	return dream, nil
 }
 
-func (u *DreamRepositoryImpl) CreateDream(dream *dao.Dream) (dao.Dream, error) {
-	err := u.db.Create(dream).Error
+func (u *DreamRepositoryImpl) CreateDream(dream dao.Dream) (dao.Dream, error) {
+	err := u.db.Create(&dream).Error
 
 	if err != nil {
 		fmt.Println("Error occurred while creating dream on model", err)
 		return dao.Dream{}, err
 	}
 
-	return *dream, nil
+	return dream, nil
 }
 
 func DreamRepositoryInit(db *gorm.DB) *DreamRepositoryImpl {

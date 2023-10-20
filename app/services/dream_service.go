@@ -1,74 +1,74 @@
 package services
 
 import (
-	"fmt"
-	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/constants"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/domain/dao"
+	"github.com/yazilimcigenclik/dream-ai-backend/app/domain/dto"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/pkg"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/repository"
 )
 
 type DreamService interface {
-	GetAllDream(c *gin.Context)
-	GetDreamById(c *gin.Context)
-	CreateDream(c *gin.Context)
+	GetAllDream() []dto.DreamDTO
+	GetDreamById(id int) dto.DreamDTO
+	CreateDream(request dto.CreateDreamRequest) dto.DreamDTO
 }
 
 type DreamServiceImpl struct {
 	dreamRepository repository.DreamRepository
 }
 
-func (u DreamServiceImpl) GetDreamById(c *gin.Context) {
-	defer pkg.PanicHandler(c)
-
-	dreamID, _ := strconv.Atoi(c.Param("id"))
-
-	data, err := u.dreamRepository.FindDreamById(dreamID)
+func (u DreamServiceImpl) GetDreamById(id int) dto.DreamDTO {
+	data, err := u.dreamRepository.FindDreamById(id)
 
 	if err != nil {
 		log.Error("Happened error when get data from database. Error", err)
 		pkg.PanicException(constants.DataNotFound)
 	}
 
-	c.JSON(http.StatusOK, pkg.BuildResponse(constants.Success, data))
+	var dreamDTO dto.DreamDTO
+	dreamDTO.FromDream(data)
+
+	return dreamDTO
 }
 
-func (u DreamServiceImpl) GetAllDream(c *gin.Context) {
-	defer pkg.PanicHandler(c)
-
+func (u DreamServiceImpl) GetAllDream() []dto.DreamDTO {
 	dreams, err := u.dreamRepository.FindAllDream()
 
 	if err != nil {
 		log.Error("Happened error when get data from database. Error", err)
 		pkg.PanicException(constants.DataNotFound)
 	}
+	var dreamDTOs []dto.DreamDTO
 
-	c.JSON(http.StatusOK, pkg.BuildResponse(constants.Success, dreams))
-}
-
-func (u DreamServiceImpl) CreateDream(c *gin.Context) {
-	defer pkg.PanicHandler(c)
-
-	var dream dao.Dream
-
-	if err := c.ShouldBindJSON(&dream); err != nil {
-		fmt.Println("Error occurred while binding dream on model", err)
-		pkg.PanicException(constants.InvalidRequest)
+	for _, dream := range dreams {
+		var dreamDTO dto.DreamDTO
+		dreamDTO.FromDream(dream)
+		dreamDTOs = append(dreamDTOs, dreamDTO)
 	}
 
-	data, err := u.dreamRepository.CreateDream(&dream)
+	return dreamDTOs
+}
+
+func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamDTO {
+
+	dream := dao.Dream{
+		Content:       request.Content,
+		GenerateImage: request.GenerateImage,
+	}
+
+	data, err := u.dreamRepository.CreateDream(dream)
 
 	if err != nil {
 		log.Error("Happened error when get data from database. Error", err)
 		pkg.PanicException(constants.DataNotFound)
 	}
 
-	c.JSON(http.StatusOK, pkg.BuildResponse(constants.Success, data))
+	var dreamDTO dto.DreamDTO
+	dreamDTO.FromDream(data)
+
+	return dreamDTO
 }
 
 func DreamServiceInit(dreamRepository repository.DreamRepository) *DreamServiceImpl {

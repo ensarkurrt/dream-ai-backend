@@ -1,28 +1,27 @@
 package config
 
 import (
-	"log"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/controllers"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/repository"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/services"
+	"gorm.io/gorm"
 )
 
 type Initialization struct {
-	DreamRepo repository.DreamRepository
-	DreamSvc  services.DreamService
 	DreamCtrl controllers.DreamController
 }
 
 func NewInitialization(
-	dreamRepo repository.DreamRepository,
-	dreamService services.DreamService,
-	dreamCtrl controllers.DreamController,
+	db *gorm.DB,
 ) *Initialization {
-	log.Print("Initializing...")
+	log.Println("Initialization started")
+	dreamRepository := repository.DreamRepositoryInit(db)
+	dreamService := services.DreamServiceInit(dreamRepository)
+	dreamController := controllers.DreamControllerInit(dreamService)
+
 	return &Initialization{
-		DreamRepo: dreamRepo,
-		DreamSvc:  dreamService,
-		DreamCtrl: dreamCtrl,
+		DreamCtrl: dreamController,
 	}
+
 }

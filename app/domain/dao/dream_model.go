@@ -1,12 +1,18 @@
 package dao
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type Dream struct {
-	gorm.Model
-	Title         string  `json:"title"`
-	Content       string  `json:"content"`
-	Explanation   string  `json:"explanation"`
-	ImageUrl      *string `json:"image_url"`
-	GenerateImage bool    `json:"generate_image"`
+	ID            uint   `gorm:"primarykey" `
+	Title         string `json:"title" gorm:"not null"`
+	Content       string `json:"content"`
+	Explanation   string `json:"explanation"`
+	ImageUrl      string `json:"image_url"`
+	ImagePrompt   string `json:"image_prompt"`
+	GenerateImage bool   `json:"generate_image"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
