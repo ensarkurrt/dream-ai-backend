@@ -15,6 +15,7 @@ func Init(init *config.Initialization) *gin.Engine {
 		v1 := api.Group("/v1")
 		{
 			NewDreamRouters(init, v1)
+			NewAuthRoutes(init, v1)
 		}
 	}
 

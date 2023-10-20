@@ -10,6 +10,7 @@ import (
 
 type Initialization struct {
 	DreamCtrl controllers.DreamController
+	AuthCtrl  controllers.AuthController
 }
 
 func NewInitialization(
@@ -20,8 +21,13 @@ func NewInitialization(
 	dreamService := services.DreamServiceInit(dreamRepository)
 	dreamController := controllers.DreamControllerInit(dreamService)
 
+	userRepository := repository.NewUserRepository(db)
+	userService := services.NewUserService(userRepository)
+	authController := controllers.NewAuthController(userService)
+
 	return &Initialization{
 		DreamCtrl: dreamController,
+		AuthCtrl:  authController,
 	}
 
 }

@@ -60,7 +60,7 @@ func DreamRepositoryInit(db *gorm.DB) *DreamRepositoryImpl {
 	err := db.AutoMigrate(&dao.Dream{})
 
 	if err != nil {
-		log.Error("Got an error when migrate user. Error: ", err)
+		log.Error("Got an error when migrate dream. Error: ", err)
 		return nil
 	}
 
