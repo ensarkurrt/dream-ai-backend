@@ -2,22 +2,40 @@ package utils
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/sashabaranov/go-openai"
 )
 
-func GenerateExplanation(prompt string) (*string, error) {
+type GPT interface {
+	GenerateExplanation(prompt string) (string, error)
+	GenerateTitle(prompt string) (string, error)
+	GenerateImagePrompt(prompt string) (string, error)
+}
+
+type GPTImpl struct {
+	client *openai.Client
+	ctx    context.Context
+}
+
+func NewGPT() *GPTImpl {
 	openaiToken := os.Getenv("OPEN_AI_TOKEN")
 
 	client := openai.NewClient(openaiToken)
 	ctx := context.Background()
 
-	defaultPrompt := "I want you to act as a dream interpreter. \\n  I will give you descriptions of my dreams, and you will provide interpretations based on the symbols and themes present in the dream. \\n  Do not provide personal opinions or assumptions about the dreamer. \\n  Do not summarize the dream. Directly start with interpreting the dream.\\n  Provide only factual interpretations based on the information given. \\n  Write your answer as you are speaking to another person.\\n  Use a friendly tone.: "
+	return &GPTImpl{
+		client: client,
+		ctx:    ctx,
+	}
+}
 
-	resp, err := client.CreateChatCompletion(
-		ctx,
+func (gpt *GPTImpl) GenerateExplanation(prompt string) (string, error) {
+	defaultPrompt := "Rüya yorumcusu olmanı istiyorum. \\n Ben size rüyalarımın tanımlarını vereceğim, siz de rüyada mevcut olan sembol ve temalara göre yorumlar yapacaksınız. \\n Rüyayı gören kişi hakkında kişisel görüş veya varsayımlarda bulunmayın. \\n Rüyayı özetlemeyin. Doğrudan rüyayı yorumlamakla başlayın.\\n Verilen bilgilere dayanarak yalnızca gerçeklere dayanan yorumlar yapın. \\n Cevabınızı başka biriyle konuşurken yazın.\\n Dostça bir ses tonu kullanın.: "
+
+	resp, err := gpt.client.CreateChatCompletion(
+		gpt.ctx,
 		openai.ChatCompletionRequest{
 			Model:     openai.GPT3Dot5Turbo,
 			MaxTokens: 500,
@@ -35,19 +53,14 @@ func GenerateExplanation(prompt string) (*string, error) {
 	)
 
 	if err != nil {
-		fmt.Printf("Generate Explanation Completion error: %v\n", err)
-		return nil, err
+		log.Println("Generate Explanation Completion error: %v\n", err)
+		return "", err
 	}
 
-	return &resp.Choices[0].Message.Content, nil
+	return resp.Choices[0].Message.Content, nil
 }
 
-func GenerateTitle(prompt string) (*string, error) {
-
-	openaiToken := os.Getenv("OPEN_AI_TOKEN")
-
-	client := openai.NewClient(openaiToken)
-	ctx := context.Background()
+func (gpt *GPTImpl) GenerateTitle(prompt string) (string, error) {
 
 	req := openai.CompletionRequest{
 		Model:     openai.GPT3TextDavinci003,
@@ -55,34 +68,29 @@ func GenerateTitle(prompt string) (*string, error) {
 		Prompt:    "Lütfen metin için başlık yazınız.\n\nMetin:\n" + prompt + "\n\nBaşlık:",
 	}
 
-	resp, err := client.CreateCompletion(ctx, req)
+	resp, err := gpt.client.CreateCompletion(gpt.ctx, req)
 
 	if err != nil {
-		fmt.Printf("Generate Title Completion error: %v\n", err)
-		return nil, err
+		log.Println("Generate Title Completion error: %v\n", err)
+		return "", err
 	}
 
-	return &resp.Choices[0].Text, nil
+	return resp.Choices[0].Text, nil
 }
 
-func GenerateImagePrompt(prompt string) (*string, error) {
-	openaiToken := os.Getenv("OPEN_AI_TOKEN")
-
-	client := openai.NewClient(openaiToken)
-	ctx := context.Background()
-
+func (gpt *GPTImpl) GenerateImagePrompt(prompt string) (string, error) {
 	req := openai.CompletionRequest{
 		Model:     openai.GPT3TextDavinci003,
 		MaxTokens: 50,
 		Prompt:    " \" " + prompt + " \" metninin ingilizcesi:",
 	}
 
-	resp, err := client.CreateCompletion(ctx, req)
+	resp, err := gpt.client.CreateCompletion(gpt.ctx, req)
 
 	if err != nil {
-		fmt.Printf("Generate Image Prompt Completion error: %v\n", err)
-		return nil, err
+		log.Println("Generate Image Prompt Completion error: %v\n", err)
+		return "", err
 	}
 
-	return &resp.Choices[0].Text, nil
+	return resp.Choices[0].Text, nil
 }

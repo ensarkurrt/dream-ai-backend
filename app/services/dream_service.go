@@ -7,6 +7,8 @@ import (
 	"github.com/yazilimcigenclik/dream-ai-backend/app/domain/dto"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/pkg"
 	"github.com/yazilimcigenclik/dream-ai-backend/app/repository"
+	"github.com/yazilimcigenclik/dream-ai-backend/app/utils"
+	"sync"
 )
 
 type DreamService interface {
@@ -57,6 +59,22 @@ func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamD
 		Content:       request.Content,
 		GenerateImage: request.GenerateImage,
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	gpt := utils.NewGPT()
+	go func() {
+		defer wg.Done()
+		resp, err := gpt.GenerateTitle(request.Content)
+		if err != nil {
+			log.Error("Happened error when generating Title: Error: ", err)
+			pkg.PanicException(constants.UnknownError)
+		}
+		dream.Title = resp
+	}()
+
+	wg.Wait()
 
 	data, err := u.dreamRepository.CreateDream(dream)
 
