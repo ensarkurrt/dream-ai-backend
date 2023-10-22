@@ -11,12 +11,13 @@ import (
 )
 
 type DreamService interface {
-	GetAllDream() []dto.DreamDTO
+	GetAllDream(userId uint) []dto.DreamDTO
 	GetDreamById(id int) dto.DreamDTO
 	CreateDream(request dto.CreateDreamRequest) dto.DreamDTO
 }
 
 type DreamServiceImpl struct {
+	userRepository  repository.UserRepository
 	dreamRepository repository.DreamRepository
 	queueRepository repository.DreamQueueRepository
 }
@@ -35,8 +36,8 @@ func (u DreamServiceImpl) GetDreamById(id int) dto.DreamDTO {
 	return dreamDTO
 }
 
-func (u DreamServiceImpl) GetAllDream() []dto.DreamDTO {
-	dreams, err := u.dreamRepository.FindAllDream()
+func (u DreamServiceImpl) GetAllDream(userId uint) []dto.DreamDTO {
+	dreams, err := u.dreamRepository.FindAllDreamByUserId(userId)
 
 	if err != nil {
 		log.Error("Happened error when get data from database. Error", err)
@@ -55,8 +56,17 @@ func (u DreamServiceImpl) GetAllDream() []dto.DreamDTO {
 
 func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamDTO {
 
+	user, err := u.userRepository.FindById(request.UserID)
+
+	if err != nil {
+		log.Error("Happened error when get user from database. Error", err)
+		pkg.PanicException(constants.DataNotFound)
+	}
+
 	dream := dao.Dream{
 		Content: request.Content,
+		UserID:  user.ID,
+		User:    user,
 	}
 
 	data, err := u.dreamRepository.CreateDream(dream)
@@ -87,9 +97,10 @@ func (u DreamServiceImpl) CreateDream(request dto.CreateDreamRequest) dto.DreamD
 	return dreamDTO
 }
 
-func NewDreamService(dreamRepository repository.DreamRepository, queueRepository repository.DreamQueueRepository) *DreamServiceImpl {
+func NewDreamService(dreamRepository repository.DreamRepository, queueRepository repository.DreamQueueRepository, userRepository repository.UserRepository) *DreamServiceImpl {
 	return &DreamServiceImpl{
 		dreamRepository: dreamRepository,
 		queueRepository: queueRepository,
+		userRepository:  userRepository,
 	}
 }

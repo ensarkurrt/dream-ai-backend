@@ -19,12 +19,12 @@ func NewInitialization(
 	log.Println("Initialization started")
 
 	dreamQueueRepository := repository.NewDreamQueueRepository(db)
-
+	userRepository := repository.NewUserRepository(db)
 	dreamRepository := repository.NewDreamRepository(db)
-	dreamService := services.NewDreamService(dreamRepository, dreamQueueRepository)
+
+	dreamService := services.NewDreamService(dreamRepository, dreamQueueRepository, userRepository)
 	dreamController := controllers.NewDreamController(dreamService)
 
-	userRepository := repository.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)
 	authController := controllers.NewAuthController(userService)
 

@@ -11,6 +11,7 @@ type GetDreamByIDRequest struct {
 
 type CreateDreamRequest struct {
 	Content string `json:"content" binding:"required"`
+	UserID  uint   `json:"user_id"`
 }
 
 type DreamDTO struct {
@@ -21,6 +22,7 @@ type DreamDTO struct {
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 	Status      dao.DreamStatus `json:"status"`
+	UserID      uint            `json:"user_id"`
 }
 
 func (dto *DreamDTO) FromDream(dream dao.Dream) {
@@ -31,4 +33,5 @@ func (dto *DreamDTO) FromDream(dream dao.Dream) {
 	dto.CreatedAt = dream.CreatedAt
 	dto.UpdatedAt = dream.UpdatedAt
 	dto.Status = dream.Status
+	dto.UserID = dream.UserID
 }

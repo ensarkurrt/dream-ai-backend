@@ -28,12 +28,12 @@ func (service *UserServiceImpl) Login(request dto.UserLoginRequest) dto.UserDto 
 		pkg.PanicException(constants.Unauthorized)
 	}
 
-	accessToken, err := utils.GenerateJWTToken(user.Username, utils.AccessToken)
+	accessToken, err := utils.GenerateJWTToken(user.ID, utils.AccessToken)
 	if err != nil {
 		pkg.PanicException(constants.Unauthorized)
 	}
 
-	refreshToken, err := utils.GenerateJWTToken(user.Username, utils.RefreshToken)
+	refreshToken, err := utils.GenerateJWTToken(user.ID, utils.RefreshToken)
 	if err != nil {
 		pkg.PanicException(constants.Unauthorized)
 	}
@@ -62,12 +62,12 @@ func (service *UserServiceImpl) Register(request dto.UserRegisterRequest) dto.Us
 		pkg.PanicException(constants.UnknownError)
 	}
 
-	accessToken, err := utils.GenerateJWTToken(user.Username, utils.AccessToken)
+	accessToken, err := utils.GenerateJWTToken(user.ID, utils.AccessToken)
 	if err != nil {
 		pkg.PanicException(constants.Unauthorized)
 	}
 
-	refreshToken, err := utils.GenerateJWTToken(user.Username, utils.RefreshToken)
+	refreshToken, err := utils.GenerateJWTToken(user.ID, utils.RefreshToken)
 	if err != nil {
 		pkg.PanicException(constants.Unauthorized)
 	}

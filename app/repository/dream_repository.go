@@ -10,6 +10,7 @@ import (
 
 type DreamRepository interface {
 	FindAllDream() ([]dao.Dream, error)
+	FindAllDreamByUserId(userId uint) ([]dao.Dream, error)
 	FindDreamById(id int) (dao.Dream, error)
 	CreateDream(dream dao.Dream) (dao.Dream, error)
 	UpdateDream(dream dao.Dream) (dao.Dream, error)
@@ -17,6 +18,19 @@ type DreamRepository interface {
 
 type DreamRepositoryImpl struct {
 	db *gorm.DB
+}
+
+func (u *DreamRepositoryImpl) FindAllDreamByUserId(userId uint) ([]dao.Dream, error) {
+	var dreams []dao.Dream
+
+	err := u.db.Where("user_id = ?", userId).Find(&dreams).Error
+
+	if err != nil {
+		fmt.Println("Error occurred while fetching dreams on model", err)
+		return nil, err
+	}
+
+	return dreams, nil
 }
 
 func (u *DreamRepositoryImpl) FindAllDream() ([]dao.Dream, error) {

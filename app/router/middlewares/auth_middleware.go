@@ -44,7 +44,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		ctx.Set("jwt_token", authKey)
-		ctx.Set("username", claim.Username)
+		ctx.Set("user_id", claim.UserID)
 
 		ctx.Next()
 	}

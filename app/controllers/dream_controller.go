@@ -23,7 +23,12 @@ type DreamControllerImpl struct {
 func (d *DreamControllerImpl) GetAllDreams(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 
-	dreams := d.svc.GetAllDream()
+	userId, exists := c.Get("user_id")
+
+	if exists != true {
+		pkg.PanicException(constants.InvalidRequest)
+	}
+	dreams := d.svc.GetAllDream(userId.(uint))
 
 	c.JSON(http.StatusOK, pkg.BuildResponse[[]dto.DreamDTO](constants.Success, dreams))
 }
@@ -34,6 +39,13 @@ func (d *DreamControllerImpl) CreateDream(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		pkg.PanicException(constants.InvalidRequest)
 	}
+
+	userId, exists := c.Get("user_id")
+
+	if exists != true {
+		pkg.PanicException(constants.InvalidRequest)
+	}
+	request.UserID = userId.(uint)
 	dream := d.svc.CreateDream(request)
 
 	c.JSON(http.StatusOK, pkg.BuildResponse[dto.DreamDTO](constants.Success, dream))

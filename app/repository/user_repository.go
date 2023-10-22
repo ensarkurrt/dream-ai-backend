@@ -9,7 +9,19 @@ import (
 
 type UserRepository interface {
 	FindByUsername(username string) (dao.User, error)
+	FindById(id uint) (dao.User, error)
 	Create(user dao.User) (dao.User, error)
+}
+
+func (repo *UserRepositoryImpl) FindById(id uint) (dao.User, error) {
+	var user dao.User
+	result := repo.db.First(&user, id)
+
+	if result.Error != nil {
+		return dao.User{}, result.Error
+	}
+
+	return user, nil
 }
 
 func (repo *UserRepositoryImpl) FindByUsername(username string) (dao.User, error) {

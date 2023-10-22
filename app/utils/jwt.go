@@ -9,7 +9,7 @@ import (
 )
 
 type Claims struct {
-	Username string `json:"username"`
+	UserID uint `json:"user_id"`
 	jwt.StandardClaims
 }
 type JwtTokenType string
@@ -19,7 +19,7 @@ const (
 	RefreshToken JwtTokenType = "refresh_token_exp"
 )
 
-func GenerateJWTToken(username string, tokenType JwtTokenType) (string, error) {
+func GenerateJWTToken(userId uint, tokenType JwtTokenType) (string, error) {
 
 	var expirationTime time.Time
 
@@ -32,7 +32,7 @@ func GenerateJWTToken(username string, tokenType JwtTokenType) (string, error) {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 	claims := &Claims{
-		Username: username,
+		UserID: userId,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

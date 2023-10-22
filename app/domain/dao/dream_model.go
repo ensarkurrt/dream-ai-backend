@@ -10,6 +10,8 @@ type Dream struct {
 	Content     string      `json:"content" gorm:"not null"`
 	Explanation string      `json:"explanation"`
 	Status      DreamStatus `json:"status" gorm:"not null;default:pending"`
+	UserID      uint        `json:"user_id" gorm:"not null"`
+	User        User        `json:"user" gorm:"foreignKey:UserID"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
